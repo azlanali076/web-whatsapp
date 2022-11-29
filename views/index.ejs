@@ -21,6 +21,7 @@
     <% } %>
 
     <div id="auth" class="<%= (url) ? 'd-none' : 'd-block' %>" >
+        <input type="tel" placeholder="Number (921231231234)" id="number" />
         <input type="text" placeholder="Message" id="message" />
         <button type="button" onclick="sendMsg()" >Send</button>
     </div>
@@ -44,8 +45,9 @@
 
         function sendMsg(){
             let message = $("#message").val();
+            let number = $("#number").val();
             axios.post("/send-message?id=<%= clientId %>",{
-                number: "923132046861@c.us",message
+                number: number+"@c.us",message
             }).then(e => {
                 console.log(e.data);
             })
