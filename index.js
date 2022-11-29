@@ -22,7 +22,21 @@ app.get('/', (req, res) => {
     }
     console.log('creating client with id '+req.query.id);
     let client = new Client({
-        authStrategy: new LocalAuth({clientId: req.query.id})
+        authStrategy: new LocalAuth({clientId: req.query.id}),
+        // restartOnAuthFail: true,
+        puppeteer: {
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process', // <- this one doesn't works in Windows
+                '--disable-gpu'
+            ],
+        },
     });
     client.on('qr',(qr) => {
         console.log('got qr code');
