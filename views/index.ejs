@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whatsapp Web</title>
+    <style>
+        .d-none {
+            display: none;
+        }
+        .d-block{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Client ID: <%= clientId %></h1>
+    <% if (url) { %>
+        <img src="<%= url %>" />
+    <% } %>
+
+    <div id="auth" class="<%= (url) ? 'd-none' : 'd-block' %>" >
+        <input type="text" placeholder="Message" id="message" />
+        <button type="button" onclick="sendMsg()" >Send</button>
+    </div>
+    <ul id="messages" >
+    </ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.0/axios.min.js"></script>
+    <script>
+        let socket = io();
+        socket.on('auth',(auth_completed) => {
+            console.log("Auth Completed or not",auth_completed);
+            $("#auth").removeClass('d-none');
+        })
+
+        socket.on('message',(msg) => {
+            $("#messages").append(`<li>${msg.body}</li>`);
+            console.log(msg);
+        })
+
+        function sendMsg(){
+            let message = $("#message").val();
+            axios.post("/send-message?id=<%= clientId %>",{
+                number: "923132046861@c.us",message
+            }).then(e => {
+                console.log(e.data);
+            })
+        }
+    </script>
+</body>
+</html>
