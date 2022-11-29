@@ -13,6 +13,9 @@ app.set('view engine','ejs');
 app.use(express.json());
 
 app.get('/', (req, res) => {
+    if(!req.query.id){
+        return res.json({error: '`id` in query is required'});
+    }
     if(whatsappClients[req.query.id]){
         return res.render('index',{clientId: req.query.id,url:''});
     }
