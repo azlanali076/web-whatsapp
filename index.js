@@ -5,6 +5,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const { Client, LocalAuth } = require('whatsapp-web.js');
+const fs = require('fs');
 const io = new Server(server);
 
 let whatsappClients = {};
@@ -29,7 +30,12 @@ app.get('/', (req, res) => {
             if(err){
                 return res.json({success:false,error:err});
             }
-            return res.render('index',{url,clientId: req.query.id});
+            if(!res.headersSent){
+                return res.render('index',{url,clientId: req.query.id});
+            }
+            else{
+                io.emit('new_qr',url);
+            }
         });
     });
     client.on('authenticated',(session) => {
@@ -58,8 +64,24 @@ app.post('/send-message',(req,res) => {
     }
 });
 
-io.on('connection', (socket) => {
-  console.log('a user connected');
+app.post('/logout',(req,res) => {
+    if(req.query.id){
+        whatsappClients.splice(req.query.id,1);
+        whatsappClients[req.query.id].logout().then(() => {
+            fs.rmdir('.wwebjs_auth/session-'+req.query.id,{recursive: true},(err) => {
+                if(err){
+                    return res.json({success: false,message: err});
+                }
+                return res.json({success:true,message:'Logout Done'});
+            })
+            
+        }).catch(err => {
+            return res.json({success: false,error: err});
+        });
+    }
+    else{
+        return res.json({error:'ID is Required'});
+    }
 });
 
 server.listen(3000, () => {

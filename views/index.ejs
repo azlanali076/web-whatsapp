@@ -17,8 +17,10 @@
 <body>
     <h1>Client ID: <%= clientId %></h1>
     <% if (url) { %>
-        <img src="<%= url %>" />
+        <img id="qr" src="<%= url %>" />
     <% } %>
+    
+    <button id="logout" class="<%= (url) ? 'd-none' : 'd-block' %>" onclick="logout()" >Logout</button>
 
     <div id="auth" class="<%= (url) ? 'd-none' : 'd-block' %>" >
         <input type="tel" placeholder="Number (921231231234)" id="number" />
@@ -43,6 +45,10 @@
             console.log(msg);
         })
 
+        socket.on('new_qr',url => {
+            $("#qr").attr('src',url);
+        })
+
         function sendMsg(){
             let message = $("#message").val();
             let number = $("#number").val();
@@ -51,6 +57,14 @@
             }).then(e => {
                 console.log(e.data);
             })
+        }
+
+        function logout(){
+            axios.post('/logout?id=<%= clientId %>',{}).then((e) => {
+                if(e.data.success){
+                    window.location.reload();
+                }
+            });
         }
     </script>
 </body>
