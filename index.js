@@ -80,12 +80,12 @@ app.post('/send-message',(req,res) => {
 
 app.post('/logout',(req,res) => {
     if(req.query.id){
-        whatsappClients.splice(req.query.id,1);
         whatsappClients[req.query.id].logout().then(() => {
             fs.rmdir('.wwebjs_auth/session-'+req.query.id,{recursive: true},(err) => {
                 if(err){
                     return res.json({success: false,message: err});
                 }
+                whatsappClients[req.query.id] = null;
                 return res.json({success:true,message:'Logout Done'});
             })
             
