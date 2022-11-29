@@ -35,17 +35,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.0/axios.min.js"></script>
     <script>
         let socket = io();
-        socket.on('auth',(auth_completed) => {
+        socket.on('auth_<%= clientId %>',(auth_completed) => {
             console.log("Auth Completed or not",auth_completed);
             $("#auth").removeClass('d-none');
+            $("#logout").removeClass('d-none');
         })
 
-        socket.on('message',(msg) => {
+        socket.on('message_<%= clientId %>',(msg) => {
             $("#messages").append(`<li>${msg.body}</li>`);
             console.log(msg);
         })
 
-        socket.on('new_qr',url => {
+        socket.on('new_qr_<%= clientId %>',url => {
             $("#qr").attr('src',url);
         })
 

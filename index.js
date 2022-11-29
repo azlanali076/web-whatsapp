@@ -48,18 +48,18 @@ app.get('/', (req, res) => {
                 return res.render('index',{url,clientId: req.query.id});
             }
             else{
-                io.emit('new_qr',url);
+                io.emit('new_qr_'+req.query.id,url);
             }
         });
     });
     client.on('authenticated',(session) => {
-        io.emit("auth",true)
+        io.emit("auth_"+req.query.id,true)
     })
     client.on('auth_failure',() => {
-        io.emit("auth",false)
+        io.emit("auth_"+req.query.id,false)
     })
     client.on('message',(msg) => {
-        io.emit('message',msg);
+        io.emit('message_'+req.query.id,msg);
     })
     client.initialize();
     whatsappClients[req.query.id] = client;
